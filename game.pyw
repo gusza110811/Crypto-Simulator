@@ -186,6 +186,39 @@ def pausemenu(root:tkinter.Tk, button:tkinter.Button, generalframe:tkinter.Frame
 
     return
 
+def inventoryfunc(root:tkinter.Tk, button:tkinter.Button, generalframe:tkinter.Frame, inventory:list[list[str,int,int]]):
+    global gamestate
+    global updated
+    global gpu
+
+    scrollbar = tkinter.Scrollbar(generalframe)
+    inventorydisp = tkinter.Listbox(generalframe,bg=backgroundcolor,fg=foregroundcolor,font=fontsmall,yscrollcommand=scrollbar.set)
+    scrollbar.config(command=inventorydisp.yview)
+
+    for item in inventory:
+        inventorydisp.insert("end",item)
+
+    if gamestate != gamestates.INVENTORY:
+        button.config(text="Close Inventory",font=fontmid,padx=0)
+
+        scrollbar.pack(side="right",fill="y")
+        inventorydisp.pack()
+
+        gamestate = gamestates.INVENTORY
+        updated = False
+
+    
+    else:
+        button.config(text="Inventory",font=fontnormal,padx=10)
+
+        clear(generalframe)
+
+        gamestate = gamestates.IDLE
+        updated = False
+
+
+    return
+
 
 # The game itself (wow)
 def game(root:tkinter.Tk):
@@ -202,6 +235,8 @@ def game(root:tkinter.Tk):
 
     global secondspercycle
     global cryptopercycle
+
+    global gpu
     
     inventory = [
         gpus[0][0]
@@ -232,7 +267,7 @@ def game(root:tkinter.Tk):
     profilebutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Profile",font=fontnormal)
     profilebutton.grid(row=1,column=3,pady=10,padx=10)
 
-    invbutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Inventory",font=fontnormal)
+    invbutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Inventory",font=fontnormal,command=lambda:inventoryfunc(root,invbutton,GeneralFrame,inventory))
     invbutton.grid(row=1,column=1,pady=10,padx=10)
 
     cryptoVar = tkinter.StringVar(root,"Cryptos: ")
@@ -280,6 +315,15 @@ def game(root:tkinter.Tk):
                 profilebutton.config(state="disabled",fg=backgroundcolor)
                 invbutton.config(state="disabled",fg=backgroundcolor)
                 pause.config(state="normal",fg=foregroundcolor)
+                updated = True
+        
+        if gamestate == gamestates.INVENTORY:
+            if not updated:
+                shopbutton.config(state="disabled",fg=backgroundcolor)
+                minebutton.config(state="disabled",fg=backgroundcolor)
+                profilebutton.config(state="disabled",fg=backgroundcolor)
+                invbutton.config(state="normal",fg=foregroundcolor)
+                pause.config(state="disabled",fg=backgroundcolor)
                 updated = True
 
         root.update()
