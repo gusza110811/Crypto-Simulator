@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "C:\0) STUFF\programming\Crypto-Simulator\game.pyw", line 13, in <module>
-    pyglet.font.add_file(str(fontpath))
-  File "C:\Python312\Lib\site-packages\pyglet\font\__init__.py", line 215, in add_file
-    font = open(font, "rb")  # noqa: SIM115
-           ^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'fonts/Public Pixel.ttf'
