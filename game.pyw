@@ -13,6 +13,7 @@ fontpath = f"fonts/{font}.ttf"
 pyglet.font.add_file(str(fontpath))
 
 class gamestates(enum.Enum):
+    OFF = "off"
     IDLE = 0
     MINING = 1
     SHOPPING = 3
@@ -33,6 +34,7 @@ colorpalettes = {
 
 gpus = [
     # [Name, Seconds per cycle, Crypto per cycle]
+    ["Tester Gpu",5,1],
     ["Scrapyard Gpu",20,1]
 ]
 
@@ -191,18 +193,34 @@ def inventoryfunc(root:tkinter.Tk, button:tkinter.Button, generalframe:tkinter.F
     global updated
     global gpu
 
+    inventorynames = []
+
+    for item in inventory:
+        inventorynames.append(gpus[item][0])
+
     scrollbar = tkinter.Scrollbar(generalframe)
     inventorydisp = tkinter.Listbox(generalframe,bg=backgroundcolor,fg=foregroundcolor,font=fontsmall,yscrollcommand=scrollbar.set)
     scrollbar.config(command=inventorydisp.yview)
+    
+    def equip():
+        global gpu
+        gpu = inventorydisp.curselection()[0]
 
-    for item in inventory:
+        return
+
+    equipbutton = tkinter.Button(generalframe,bg=backgroundcolor,fg=foregroundcolor,text="Equip",font=fontsmall,command=equip)
+
+    for item in inventorynames:
         inventorydisp.insert("end",item)
+    
+    inventorydisp.select_set(inventory.index(gpu))
 
     if gamestate != gamestates.INVENTORY:
         button.config(text="Close Inventory",font=fontmid,padx=0)
 
         scrollbar.pack(side="right",fill="y")
         inventorydisp.pack()
+        equipbutton.pack()
 
         gamestate = gamestates.INVENTORY
         updated = False
@@ -239,15 +257,16 @@ def game(root:tkinter.Tk):
     global gpu
     
     inventory = [
-        gpus[0][0]
+        0,
+        1
     ]
 
-    gpu = inventory[0]
+    gpu = inventory[1]
     crypto = 0
     cash = 0
 
-    secondspercycle = gpus[0][1]
-    cryptopercycle =gpus[0][2]
+    secondspercycle = gpus[gpu][1]
+    cryptopercycle =gpus[gpu][2]
 
     secondstogo = secondspercycle
 
@@ -264,8 +283,8 @@ def game(root:tkinter.Tk):
     minebutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Mine",font=fontnormal,command=lambda: mine(root,minebutton,GeneralFrame,secondstogotk))
     minebutton.grid(row=2,column=0,pady=10,padx=10)
 
-    profilebutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Profile",font=fontnormal)
-    profilebutton.grid(row=1,column=3,pady=10,padx=10)
+    guidebutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Guide",font=fontnormal)
+    guidebutton.grid(row=1,column=3,pady=10,padx=10)
 
     invbutton = tkinter.Button(root, bg=backgroundcolor, fg=foregroundcolor, text="Inventory",font=fontnormal,command=lambda:inventoryfunc(root,invbutton,GeneralFrame,inventory))
     invbutton.grid(row=1,column=1,pady=10,padx=10)
@@ -277,7 +296,7 @@ def game(root:tkinter.Tk):
     deltatime = 0
     global updated
     updated = False
-    while 1:
+    while gamestate != gamestates.OFF:
         timelastupdate = time.time()
         cryptoVar.set("Cryptos:\n"+str(crypto))
         secondstogotk.set("time til\nnext cycle: "+'{:.2f}'.format(round(secondstogo,2)))
@@ -286,7 +305,7 @@ def game(root:tkinter.Tk):
             if not updated:
                 shopbutton.config(state="normal",fg=foregroundcolor)
                 minebutton.config(state="normal",fg=foregroundcolor)
-                profilebutton.config(state="normal",fg=foregroundcolor)
+                guidebutton.config(state="normal",fg=foregroundcolor)
                 invbutton.config(state="normal",fg=foregroundcolor)
                 pause.config(state="normal",fg=foregroundcolor)
                 updated = True
@@ -295,7 +314,7 @@ def game(root:tkinter.Tk):
             if not updated:
                 shopbutton.config(state="disabled",fg=backgroundcolor)
                 minebutton.config(state="normal",fg=foregroundcolor)
-                profilebutton.config(state="disabled",fg=backgroundcolor)
+                guidebutton.config(state="disabled",fg=backgroundcolor)
                 invbutton.config(state="disabled",fg=backgroundcolor)
                 pause.config(state="disabled",fg=backgroundcolor)
                 updated = True
@@ -312,7 +331,7 @@ def game(root:tkinter.Tk):
             if not updated:
                 shopbutton.config(state="disabled",fg=backgroundcolor)
                 minebutton.config(state="disabled",fg=backgroundcolor)
-                profilebutton.config(state="disabled",fg=backgroundcolor)
+                guidebutton.config(state="disabled",fg=backgroundcolor)
                 invbutton.config(state="disabled",fg=backgroundcolor)
                 pause.config(state="normal",fg=foregroundcolor)
                 updated = True
@@ -321,14 +340,23 @@ def game(root:tkinter.Tk):
             if not updated:
                 shopbutton.config(state="disabled",fg=backgroundcolor)
                 minebutton.config(state="disabled",fg=backgroundcolor)
-                profilebutton.config(state="disabled",fg=backgroundcolor)
+                guidebutton.config(state="disabled",fg=backgroundcolor)
                 invbutton.config(state="normal",fg=foregroundcolor)
                 pause.config(state="disabled",fg=backgroundcolor)
                 updated = True
+        
+        secondspercycle = gpus[gpu][1]
+        cryptopercycle =gpus[gpu][2]
 
         root.update()
         # get deltatime
         deltatime = time.time()-  timelastupdate
+        try:
+            print(1/deltatime)
+        except:
+            pass
+    
+    root.quit()
 
     return
 
@@ -336,6 +364,9 @@ def game(root:tkinter.Tk):
 # The menu
 def menu(root:tkinter.Tk):
     clear(root)
+
+    global gamestate
+    gamestate = gamestates.OFF
 
     reload()
     root.configure(bg=backgroundcolor)
