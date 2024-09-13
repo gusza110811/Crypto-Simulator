@@ -14,6 +14,7 @@ pyglet.font.add_file(str(fontpath))
 
 class gamestates(enum.Enum):
     OFF = "off"
+    ON = "on"
     IDLE = 0
     MINING = 1
     SHOPPING = 3
@@ -108,6 +109,7 @@ def savesetting(root,colorpalettechooser:tkinter.Listbox,flippalette:tkinter.Boo
 def setting(root:tkinter.Tk):
     clear(root)
     root.configure(bg=backgroundcolor)
+    global gamestate
 
     Title = tkinter.Label(root,bg=backgroundcolor,text="SETTINGS",foreground=foregroundcolor,font=fontbig)
     Title.pack(pady=10)
@@ -165,8 +167,12 @@ def pausemenu(root:tkinter.Tk, button:tkinter.Button, generalframe:tkinter.Frame
     global gamestate
     global updated
 
+    def leavegame():
+        global gamestate
+        gamestate = gamestates.OFF
+
     savebutton = tkinter.Button(generalframe,bg=backgroundcolor,fg=foregroundcolor,text="Save Game",font=fontnormal)
-    exitbutton = tkinter.Button(generalframe,bg=backgroundcolor,fg=foregroundcolor,text="Quit",font=fontnormal,command=lambda:menu(root))
+    exitbutton = tkinter.Button(generalframe,bg=backgroundcolor,fg=foregroundcolor,text="Quit",font=fontnormal,command=leavegame)
 
     if gamestate != gamestates.PAUSED:
         button.config(text="return to\ngame",font=fontmid)
@@ -356,7 +362,7 @@ def game(root:tkinter.Tk):
         except:
             pass
     
-    root.quit()
+    menu(root)
 
     return
 
@@ -389,6 +395,15 @@ def menu(root:tkinter.Tk):
         "Good Game!"
     ]
 
+    # there's an issue with quitting the game requiring a few presses
+    # probably due to the way stuff are dealt with but in no way am i gonna touch a better way for that
+    def hardquit():
+        root.quit()
+
+        exit()
+
+        return
+
     Title = tkinter.Label(root,bg=backgroundcolor,text="CRYPTO SIMULATOR",foreground=foregroundcolor,font=fontbig)
     Title.pack(pady=10)
 
@@ -401,7 +416,7 @@ def menu(root:tkinter.Tk):
     settingbutton = tkinter.Button(root,bg=backgroundcolor,fg=foregroundcolor,text="Settings",font=fontnormal,command=lambda: setting(root))
     settingbutton.pack(pady=10)
 
-    exitbutton = tkinter.Button(root,bg=backgroundcolor,fg=foregroundcolor,text="Quit",font=fontnormal,command=root.quit)
+    exitbutton = tkinter.Button(root,bg=backgroundcolor,fg=foregroundcolor,text="Quit",font=fontnormal,command=hardquit)
     exitbutton.pack(pady=10)
 
     version = tkinter.Label(root,bg=backgroundcolor,fg=foregroundcolor,text=f"version: {VERSION}",font=fonttiny)
