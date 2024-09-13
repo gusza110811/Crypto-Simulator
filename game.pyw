@@ -5,6 +5,7 @@ import random
 import json
 import enum
 import time
+import datetime
 
 font = "Public Pixel"
 
@@ -387,13 +388,21 @@ def menu(root:tkinter.Tk):
         "I like cheese.",
         "Milk.",
         "It's crypto simulator!",
-        "(30×30)+11",
         "60×2 = 5!",
         "r/unexpectedfactorial",
         "SUPERUNALIVING",
         "DIG&CONSTRUCT",
         "Good Game!"
     ]
+
+    if (datetime.date.today()).strftime("%m/%d") == "09/11":
+        print("tower plane tower")
+        splashtexts = [
+            "P✈L✈A✈N✈E\nCRYPTO SIMULATOR",
+            "(30×30)+11",
+            (str(int(datetime.date.today().strftime("%Y"))-2001)+" years since the tragedy"),
+            "Average sane Jschlatt fan is the dev of this game"
+        ]
 
     # there's an issue with quitting the game requiring a few presses
     # probably due to the way stuff are dealt with but in no way am i gonna touch a better way for that
