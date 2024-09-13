@@ -392,16 +392,29 @@ def menu(root:tkinter.Tk):
         "r/unexpectedfactorial",
         "SUPERUNALIVING",
         "DIG&CONSTRUCT",
-        "Good Game!"
+        "Good Game!",
+        "I feel funky",
+        "It's"+str(datetime.date.today())
     ]
 
     if (datetime.date.today()).strftime("%m/%d") == "09/11":
-        print("tower plane tower")
+        print("special day vibe")
         splashtexts = [
             "P✈L✈A✈N✈E\nCRYPTO SIMULATOR",
-            "(30×30)+11",
-            (str(int(datetime.date.today().strftime("%Y"))-2001)+" years since the tragedy"),
-            "Average sane Jschlatt fan is the dev of this game"
+            "The sky’s full of surprises today.",
+            "Something about seeing doubles in the skyline...",
+            "Sometimes the trickshot isn’t meant to be.",
+            "Reminder: It’s " + str(datetime.date.today()),
+            "Two's a crowd in the skyline.",
+            "When things don't go according to flight plan.",
+            "Some landmarks just don't last.",
+            "It's all fun and games until you miss your target.",
+            "High stakes at high altitudes.",
+            "Striking the balance... or not.",
+            "Sometimes the odds aren't in your favor, \neven with a clear shot.",
+            "Clear skies don’t guarantee safe landings.",
+            "Some dates just never fly under the radar.",
+            "Might want to double-check that flight path."
         ]
 
     # there's an issue with quitting the game requiring a few presses
