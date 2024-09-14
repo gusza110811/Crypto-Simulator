@@ -394,7 +394,7 @@ def menu(root:tkinter.Tk):
         "DIG&CONSTRUCT",
         "Good Game!",
         "I feel funky",
-        "It's"+str(datetime.date.today()),
+        "It's "+str(datetime.date.today()),
         "Dairies"
     ]
 
