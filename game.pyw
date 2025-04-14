@@ -6,13 +6,6 @@ import json
 import enum
 import time
 
-# Declarations
-font = "Public Pixel"
-
-pyglet.options['win32_gdi_font'] = True
-fontpath = f"fonts/{font}.ttf"
-pyglet.font.add_file(str(fontpath))
-
 class gamestates(enum.Enum):
     OFF = "off"
     ON = "on"
@@ -22,6 +15,23 @@ class gamestates(enum.Enum):
     PROFILE = 4
     INVENTORY = 5
     PAUSED = 6
+
+class style:
+    colorpalettes:tkinter.font.Font
+    settings:list
+
+    backgroundcolor:tkinter.font.Font
+    foregroundcolor:tkinter.font.Font
+
+    fontbig:tkinter.font.Font
+    fontnormal:tkinter.font.Font
+    fontmid:tkinter.font.Font
+    fontsmall:tkinter.font.Font
+    fonttiny:tkinter.font.Font
+    fontname = "Public Pixel"
+
+class app:
+    root:tkinter.Tk
 
 colorpalettes = {
         "classic":["#000","#FFF"],
@@ -39,80 +49,93 @@ gpus = [
     ["Scrapyard Gpu",20,1]
 ]
 
+pyglet.options['win32_gdi_font'] = True
+fontpath = f"fonts/{style.fontname}.ttf"
+pyglet.font.add_file(str(fontpath))
+
+def clear(frame):
+    for widget in frame.winfo_children():
+        widget.destroy()
+
 # Load settings and font
 def load():
-    global colorpalettes
-    global settings
-    global backgroundcolor
-    global foregroundcolor
-    global fontbig
-    global fontnormal
-    global fontmid
-    global fontsmall
-    global fonttiny
-    global font
 
     with open("settings.json") as file:
-        settings = json.load(file)
+        style.settings = json.load(file)
     
-    if not settings["FlipPalette"]:
-        backgroundcolor, foregroundcolor = tuple(colorpalettes[settings["ColorPalette"]])
+    if not style.settings["FlipPalette"]:
+        style.backgroundcolor, style.foregroundcolor = tuple(colorpalettes[style.settings["ColorPalette"]])
     else:
-        foregroundcolor, backgroundcolor = tuple(colorpalettes[settings["ColorPalette"]])
-    fontbig = tkinter.font.Font(family=font,size=20)
-    fontnormal = tkinter.font.Font(family=font,size=16)
-    fontmid = tkinter.font.Font(family=font,size=12)
-    fontsmall = tkinter.font.Font(family=font,size=8)
-    fonttiny = tkinter.font.Font(family=font,size=6)
+        style.foregroundcolor, style.backgroundcolor = tuple(colorpalettes[style.settings["ColorPalette"]])
+    style.fontbig = tkinter.font.Font(family=style.fontname,size=20)
+    style.fontnormal = tkinter.font.Font(family=style.fontname,size=16)
+    style.fontmid = tkinter.font.Font(family=style.fontname,size=12)
+    style.fontsmall = tkinter.font.Font(family=style.fontname,size=8)
+    style.fonttiny = tkinter.font.Font(family=style.fontname,size=6)
 
     return
 
 def changepage(newpage):
-    global page
-    page = newpage
+    page.current = newpage
+    page.bypassprev = 1
+    clear(app.root)
 
-def game(root:tkinter.Tk,deltatime,init:bool):
-    if init:
-        Title = tkinter.Label(text="NO",font=fontbig,fg=foregroundcolor,bg=backgroundcolor)
+class game:
+    def render():
+        Title = tkinter.Label(text="To be implemented",font=style.fontbig,fg=style.foregroundcolor,bg=style.backgroundcolor)
         Title.pack(anchor="center")
-    return
+    
+    def update(dt):
 
-def menu(root:tkinter.Tk,dt,init:bool):
-    if init:
-        Title = tkinter.Label(text="Crypto Simulator",font=fontbig,fg=foregroundcolor,bg=backgroundcolor)
-        PlayButton = tkinter.Button(text="Play",font=fontmid,fg=foregroundcolor,bg=backgroundcolor,command=lambda:changepage(game))
+        return
+
+class menu:
+    def render():
+        Title = tkinter.Label(text="Crypto Simulator",font=style.fontbig,fg=style.foregroundcolor,bg=style.backgroundcolor)
+        PlayButton = tkinter.Button(text="Play",font=style.fontmid,fg=style.foregroundcolor,bg=style.backgroundcolor,command=lambda:changepage(game))
 
         Title.pack(anchor="center",pady=10)
         PlayButton.pack(anchor="center",pady=10)
+    
+    def update(dt):
+        return
 
-    return
+
+class page:
+    current = menu
+    previous = None
+    bypassprev = 0
 
 def main(root:tkinter.Tk):
     load()
 
-    global page
-    page = menu
-    prevpage = None
+    page.current = menu
+    page.previous = None
 
-    root.configure(background=backgroundcolor)
+    app.root.configure(background=style.backgroundcolor)
 
     dt = 0
     while True:
         begin = time.time()
 
-
-        page(root,dt,not (page==prevpage))
+        if page.current != page.previous:
+            page.current.render()
+        else:
+            page.current.update(dt)
 
         root.update()
-        
-        end = time.time()
-        prevpage = page
 
+        end = time.time()
+
+        if page.bypassprev <= 0:
+            page.previous = page.current
+        else:
+            page.bypassprev -= 1
 
         dt = end-begin
 
 if __name__ == "__main__":
-    root = tkinter.Tk()
-    root.minsize(640,380)
-    root.title("Crypto Simulator")
-    main(root)
+    app.root = tkinter.Tk()
+    app.root.minsize(640,480)
+    app.root.title("Crypto Simulator")
+    main(app.root)
